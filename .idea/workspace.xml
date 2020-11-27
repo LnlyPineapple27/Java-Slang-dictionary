@@ -20,15 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3018f38e-e401-44c8-8ba7-01dfc200a0aa" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/intellij-javadocs-4.0.1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Java-Slang-dictionary.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Java-Slang-dictionary.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input/slang.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input/slang.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/project/GUI/main.UI.form" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/project/GUI/main.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/project/data_process/readfile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/project/data_process.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/project/data_process.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/project/data_process.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,25 +117,29 @@
       <screen x="0" y="0" width="1536" height="834" />
     </state>
     <state x="223" y="72" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.834@0.0.1536.834" timestamp="1606500983981" />
-    <state width="722" height="213" key="GridCell.Tab.0.bottom" timestamp="1606501303260">
+    <state width="1493" height="211" key="GridCell.Tab.0.bottom" timestamp="1606503848696">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state width="722" height="213" key="GridCell.Tab.0.bottom/0.0.1536.834@0.0.1536.834" timestamp="1606501303260" />
-    <state width="722" height="213" key="GridCell.Tab.0.center" timestamp="1606501303260">
+    <state width="1493" height="211" key="GridCell.Tab.0.bottom/0.0.1536.834@0.0.1536.834" timestamp="1606503848696" />
+    <state width="1493" height="211" key="GridCell.Tab.0.center" timestamp="1606503848696">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state width="722" height="213" key="GridCell.Tab.0.center/0.0.1536.834@0.0.1536.834" timestamp="1606501303260" />
-    <state width="722" height="213" key="GridCell.Tab.0.left" timestamp="1606501303260">
+    <state width="1493" height="211" key="GridCell.Tab.0.center/0.0.1536.834@0.0.1536.834" timestamp="1606503848696" />
+    <state width="1493" height="211" key="GridCell.Tab.0.left" timestamp="1606503848696">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state width="722" height="213" key="GridCell.Tab.0.left/0.0.1536.834@0.0.1536.834" timestamp="1606501303260" />
-    <state width="722" height="213" key="GridCell.Tab.0.right" timestamp="1606501303260">
+    <state width="1493" height="211" key="GridCell.Tab.0.left/0.0.1536.834@0.0.1536.834" timestamp="1606503848696" />
+    <state width="1493" height="211" key="GridCell.Tab.0.right" timestamp="1606503848696">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state width="722" height="213" key="GridCell.Tab.0.right/0.0.1536.834@0.0.1536.834" timestamp="1606501303260" />
+    <state width="1493" height="211" key="GridCell.Tab.0.right/0.0.1536.834@0.0.1536.834" timestamp="1606503848696" />
     <state x="555" y="73" key="SettingsEditor" timestamp="1606501148655">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
     <state x="555" y="73" key="SettingsEditor/0.0.1536.834@0.0.1536.834" timestamp="1606501148655" />
+    <state x="431" y="155" width="672" height="678" key="search.everywhere.popup" timestamp="1606503263216">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="431" y="155" width="672" height="678" key="search.everywhere.popup/0.0.1536.834@0.0.1536.834" timestamp="1606503263216" />
   </component>
 </project>
