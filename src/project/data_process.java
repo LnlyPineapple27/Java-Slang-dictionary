@@ -25,7 +25,7 @@ public class data_process {
     public static final String SEARCH_PATH = "save/search_log.txt";
     public static final String CHANGE_PATH = "save/change_log.txt";
     static Scanner keyboard;
-    public TreeMap<String, Set<String>> data;
+    public TreeMap<String, Set<String>> data , changes;
     public List<String> history;
     public String[] paths;
     data_process(){
@@ -33,6 +33,7 @@ public class data_process {
         this.paths = new String[]{INPUT_PATH, SEARCH_PATH, CHANGE_PATH};
         this.readfile(this.paths[0]);
         this.loadHistory(this.paths[1]);
+        this.loadChanges(this.paths[2]);
     }
     data_process(String[] input_path){
         if (input_path.length != 3)
@@ -41,9 +42,11 @@ public class data_process {
         this.paths = input_path;
         this.readfile(this.paths[0]);
         this.loadHistory(this.paths[1]);
+        this.loadChanges(this.paths[2]);
     }
     protected void finalize(){
         this.backupHistory();
+        this.backupChange();
         keyboard.close();
         System.out.println("[Good bye]");
     }
@@ -94,9 +97,35 @@ public class data_process {
             err.printStackTrace();
         }
     }
+    private void loadChanges(String dir){
+        this.changes = new TreeMap<String, Set<String>>(String.CASE_INSENSITIVE_ORDER);
+        try {
+            File file = new File(dir);
+            FileReader fr = new FileReader(file);
+            BufferedReader br = new BufferedReader(fr);
 
+            String line_info;
+            while ((line_info = br.readLine()) != null){
+                String[] content = line_info.split("`"); // Parse a line to <Slang> and <Definitions>
+                if (content.length != 2)
+                    continue;
+                String[] syns = content[1].split("\\|"); // Parse <Definitions> if there are many of it
+                for (int i = 0; i < syns.length; i++)
+                    syns[i] = syns[i].trim();
+                // Set<Integer> targetSet = new HashSet<Integer>(Arrays.asList(sourceArray));
 
-    public void printdata(){
+                Set<String> words = new HashSet<String>(Arrays.asList(syns)); // Append processed data to treemap
+                this.data.put(content[0].trim(), words);
+                this.changes.put(content[0].trim(), words);
+            }
+            fr.close();
+
+        }
+        catch (IOException err){
+            err.printStackTrace();
+        }
+    }
+    public void print_all_data(){
         Set<Map.Entry<String, Set<String>>> entries = this.data.entrySet();
         for(Map.Entry<String, Set<String>> entry : entries){
             System.out.println( entry.getKey() + "\t->\t" + entry.getValue() );
@@ -105,7 +134,7 @@ public class data_process {
     private void printWord(String key){
         Set<String> s = this.data.get(key);
         if (s != null) {
-            System.out.println( key + "\t->\t" + s.toString());
+            System.out.println( key.toUpperCase() + "\t->\t" + s.toString());
         }
         else
             System.out.println("No matches");
@@ -176,6 +205,48 @@ public class data_process {
             err.printStackTrace();
         }
     }
+    private void backupChange(){
+        File fold = new File(this.paths[2]);
+        fold.delete();
+        File fnew = new File(this.paths[2]);
+
+        try {
+            FileWriter f2 = new FileWriter(fnew, false);
+            Set<Map.Entry<String, Set<String>>> entries = this.changes.entrySet();
+            for(Map.Entry<String, Set<String>> entry : entries){
+                f2.write( entry.getKey() + "`");
+                Set<String> s =  entry.getValue();
+                int num = s.size();
+                for(String i: s){
+                    num--;
+                    if(num != 0)
+                        f2.write(i + "| ");
+                    else
+                        f2.write(i + "\n");
+                }
+
+            }
+            f2.close();
+
+        } catch (IOException err) {
+            err.printStackTrace();
+        }
+    }
+    // 4. Chức năng add 1 slang words mới. Nếu slang words trùng thì thông báo cho người
+    // dùng, confirm có overwrite hay duplicate ra 1 slang word mới.
+    private void editSlang(String word, Set<String> definitions, boolean overwrite){
+        if (overwrite){
+            this.changes.put(word, definitions);
+            this.data.put(word, definitions);
+        }
+        else{
+            Set <String> old = this.data.get(word);
+            definitions.addAll(old);
+            this.changes.put(word, definitions);
+            this.data.put(word, definitions);
+        }
+    }
+
     // ------------------------ Console UI things --------------------------
     public void Console_searchSlang(){
         System.out.print("Enter any word to search: ");
@@ -194,7 +265,7 @@ public class data_process {
             }
         }
         else {
-            System.out.print(kb + "\t->\t");
+            System.out.print(kb.toUpperCase() + "\t->\t");
             System.out.println(query);
         }
     }
@@ -214,7 +285,7 @@ public class data_process {
     }
 
     public void Console_menuUI(){
-        String [] options = new String[]{"1. Slang Search", "2. Definition Search", "3. Show Slang Search History" ,"4. Exit"};
+        String [] options = new String[]{"1. Slang Search", "2. Definition Search", "3. Show Slang Search History", "4. Add/Edit Slang","5. Exit"};
         label:
         while (true){
             for (String i : options){
@@ -235,6 +306,9 @@ public class data_process {
                     this.printHistory();
                     break;
                 case "4":
+                    this.Console_addSlang();
+                    break;
+                case "5":
                     break label;
                 default:
                     System.out.println("Invalid input! Please enter again");
@@ -244,6 +318,41 @@ public class data_process {
 
         this.finalize();
     }
+
+    public void Console_addSlang(){
+        System.out.print("Enter a slang(this will be converted to uppercase automatically): ");
+        String word = this.keyboard.nextLine().trim().toUpperCase();
+        if(this.data.containsKey(word)){
+            int kb = 0;
+
+            System.out.println("This Slang was defined in data base:");
+            this.printWord(word);
+            System.out.println("Do you wish to overwrite it (1)\n" +
+                                "or just add new definition to it (2)");
+
+            while (true) {
+                System.out.print("Please enter an integer (1 or 2): ");
+                kb = Integer.parseInt(this.keyboard.nextLine().trim());
+                if (kb == 1 || kb == 2)
+                    break;
+            }
+            System.out.print("Enter number of definitions to add: ");
+            int num = Integer.parseInt(this.keyboard.nextLine().trim());
+
+            Set<String> definitions = new HashSet<String>();
+            for (int i = 1; i <= num; i++){
+                System.out.print("Enter definition " + Integer.toString(i) + ": ");
+                definitions.add(this.keyboard.nextLine().trim());
+            }
+            if (kb == 1)
+                this.editSlang(word, definitions, true);
+            else
+
+            if (kb == 2)
+                this.editSlang(word, definitions, false);
+
+        }
+    }
     // -----------------------------------------------------------------------
     public static void main(String args[]){
 
@@ -252,7 +361,6 @@ public class data_process {
 
 
         // --------------------
-        //k.printdata();
         //k.Console_searchSlang();
         //k.Console_searchDefinition();
     }
