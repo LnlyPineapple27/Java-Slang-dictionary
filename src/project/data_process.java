@@ -22,15 +22,26 @@ người dùng chọn.
 
 public class data_process {
     public static final String INPUT_PATH = "input/slang.txt";
-    public static final String SEARCH_PATH = "save/change_log.txt";
-    public static final String CHANGE_PATH = "save/search_log.txt";
+    public static final String SEARCH_PATH = "save/search_log.txt";
+    public static final String CHANGE_PATH = "save/change_log.txt";
     public TreeMap<String, Set<String>> data;
     public List<String> history;
+    public String[] paths;
+    data_process(){
+        this.paths = new String[]{INPUT_PATH, SEARCH_PATH, CHANGE_PATH};
+        this.readfile(this.paths[0]);
+        this.loadHistory(this.paths[1]);
+    }
     data_process(String[] input_path){
         if (input_path.length != 3)
-            throw new IllegalArgumentException("Invalid input!");
-        this.readfile(input_path[0]);
-        this.loadHistory(input_path[0]);
+            throw new IllegalArgumentException("[Invalid input!]");
+        this.paths = input_path;
+        this.readfile(this.paths[0]);
+        this.loadHistory(this.paths[1]);
+    }
+    protected void finalize(){
+        this.backupHistory();
+        System.out.println("[Good bye]");
     }
     private void readfile(String dir){
         this.data = new TreeMap<String, Set<String>>(String.CASE_INSENSITIVE_ORDER);
@@ -97,6 +108,7 @@ public class data_process {
     }
     //1. Chức năng tìm kiếm theo slang word.
     public Set<String> searchSlang(String word) {
+        this.appendHistory(word);
         return this.data.get(word);
     }
     public List<String> searchSlang_suggestions(String word){
@@ -131,7 +143,35 @@ public class data_process {
     }
 
     // 3. Chức năng hiển thị history, danh sách các slang word đã tìm kiếm.
+    private void appendHistory(String search_word){
+        this.history.add(search_word.trim());
+    }
+    public void printHistory(){
+        if (this.history.isEmpty()){
+            System.out.println("Empty history!");
+            return;
+        }
+        System.out.println("[Searched slangs]:");
+        for (String i: this.history){
+            System.out.println("\t" + i);
+        }
+    }
+    private void backupHistory(){
+        File fold = new File(this.paths[1]);
+        fold.delete();
+        File fnew = new File(this.paths[1]);
 
+        try {
+            FileWriter f2 = new FileWriter(fnew, false);
+            for(String i : this.history) {
+                f2.write(i + "\n");
+            }
+            f2.close();
+
+        } catch (IOException err) {
+            err.printStackTrace();
+        }
+    }
     // ------------------------ Console UI things --------------------------
     public void Console_searchSlang(){
         Scanner scan = new Scanner(System.in);
@@ -173,13 +213,14 @@ public class data_process {
 
     // -----------------------------------------------------------------------
     public static void main(String args[]){
-        String[] paths = {INPUT_PATH, SEARCH_PATH, CHANGE_PATH};
-        try {
-            data_process k = new data_process(paths);
-        }
-        catch (IllegalArgumentException ex){
-            System.out.println(ex.getMessage());
-        }
+
+        data_process k = new data_process();
+        k.printHistory();
+        k.Console_searchSlang();
+        k.printHistory();
+        k.finalize();
+
+
         // --------------------
         //k.printdata();
         //k.Console_searchSlang();
