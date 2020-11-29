@@ -22,8 +22,16 @@ người dùng chọn.
 
 public class data_process {
     public static final String INPUT_PATH = "input/slang.txt";
+    public static final String SEARCH_PATH = "save/change_log.txt";
+    public static final String CHANGE_PATH = "save/search_log.txt";
     public TreeMap<String, Set<String>> data;
-
+    public List<String> history;
+    data_process(String[] input_path){
+        if (input_path.length != 3)
+            throw new IllegalArgumentException("Invalid input!");
+        this.readfile(input_path[0]);
+        this.loadHistory(input_path[0]);
+    }
     private void readfile(String dir){
         this.data = new TreeMap<String, Set<String>>(String.CASE_INSENSITIVE_ORDER);
 
@@ -52,6 +60,27 @@ public class data_process {
             err.printStackTrace();
         }
     }
+    private void loadHistory(String dir){
+        this.history = new ArrayList<String>();
+
+        try {
+            File file = new File(dir);
+            FileReader fr = new FileReader(file);
+            BufferedReader br = new BufferedReader(fr);
+
+            String line_info;
+            while ((line_info = br.readLine()) != null){
+                this.history.add(line_info.trim());
+            }
+            fr.close();
+
+        }
+        catch (IOException err){
+            err.printStackTrace();
+        }
+    }
+
+
     public void printdata(){
         Set<Map.Entry<String, Set<String>>> entries = this.data.entrySet();
         for(Map.Entry<String, Set<String>> entry : entries){
@@ -70,7 +99,6 @@ public class data_process {
     public Set<String> searchSlang(String word) {
         return this.data.get(word);
     }
-
     public List<String> searchSlang_suggestions(String word){
         List<String> result = new ArrayList<String>();
         Set<Map.Entry<String, Set<String>>> entries = this.data.entrySet();
@@ -102,6 +130,7 @@ public class data_process {
         return result;
     }
 
+    // 3. Chức năng hiển thị history, danh sách các slang word đã tìm kiếm.
 
     // ------------------------ Console UI things --------------------------
     public void Console_searchSlang(){
@@ -144,12 +173,17 @@ public class data_process {
 
     // -----------------------------------------------------------------------
     public static void main(String args[]){
-        data_process k = new data_process();
-        k.readfile(INPUT_PATH);
+        String[] paths = {INPUT_PATH, SEARCH_PATH, CHANGE_PATH};
+        try {
+            data_process k = new data_process(paths);
+        }
+        catch (IllegalArgumentException ex){
+            System.out.println(ex.getMessage());
+        }
         // --------------------
         //k.printdata();
         //k.Console_searchSlang();
-        k.Console_searchDefinition();
+        //k.Console_searchDefinition();
     }
 
 }
