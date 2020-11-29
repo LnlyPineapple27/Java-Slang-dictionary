@@ -24,10 +24,12 @@ public class data_process {
     public static final String INPUT_PATH = "input/slang.txt";
     public static final String SEARCH_PATH = "save/search_log.txt";
     public static final String CHANGE_PATH = "save/change_log.txt";
+    static Scanner keyboard;
     public TreeMap<String, Set<String>> data;
     public List<String> history;
     public String[] paths;
     data_process(){
+        this.keyboard = new Scanner( System.in);
         this.paths = new String[]{INPUT_PATH, SEARCH_PATH, CHANGE_PATH};
         this.readfile(this.paths[0]);
         this.loadHistory(this.paths[1]);
@@ -35,12 +37,14 @@ public class data_process {
     data_process(String[] input_path){
         if (input_path.length != 3)
             throw new IllegalArgumentException("[Invalid input!]");
+        this.keyboard = new Scanner( System.in);
         this.paths = input_path;
         this.readfile(this.paths[0]);
         this.loadHistory(this.paths[1]);
     }
     protected void finalize(){
         this.backupHistory();
+        keyboard.close();
         System.out.println("[Good bye]");
     }
     private void readfile(String dir){
@@ -174,20 +178,20 @@ public class data_process {
     }
     // ------------------------ Console UI things --------------------------
     public void Console_searchSlang(){
-        Scanner scan = new Scanner(System.in);
         System.out.print("Enter any word to search: ");
-        String kb = scan.nextLine();
-        scan.close();
+        String kb = this.keyboard.nextLine();
         kb = kb.trim();
         Set<String> query = this.searchSlang(kb);
 
         if (query == null) {
             System.out.println("No matches");
-            System.out.println("Similar words");
-            List<String> sugg = this.searchSlang_suggestions(Character.toString(kb.charAt(0)));
-            System.out.println("Found " + sugg.size() + " matches");
-            for (String i : sugg)
-                this.printWord(i);
+            if (kb != "") {
+                System.out.println("Similar words");
+                List<String> sugg = this.searchSlang_suggestions(Character.toString(kb.charAt(0)));
+                System.out.println("Found " + sugg.size() + " matches");
+                for (String i : sugg)
+                    this.printWord(i);
+            }
         }
         else {
             System.out.print(kb + "\t->\t");
@@ -196,10 +200,8 @@ public class data_process {
     }
 
     public void Console_searchDefinition(){
-        Scanner scan = new Scanner(System.in);
         System.out.print("Enter any definition word to search: ");
-        String kb = scan.nextLine();
-        scan.close();
+        String kb = this.keyboard.nextLine();
         kb = kb.trim();
         List<String> query = this.searchDefinition(kb);
         if (query.isEmpty())
@@ -211,14 +213,42 @@ public class data_process {
         }
     }
 
+    public void Console_menuUI(){
+        String [] options = new String[]{"1. Slang Search", "2. Definition Search", "3. Show Slang Search History" ,"4. Exit"};
+        label:
+        while (true){
+            for (String i : options){
+                System.out.println(i);
+            }
+
+            System.out.print("Enter a number to select task: ");
+            String input = keyboard.nextLine();
+
+            switch (input){
+                case "1":
+                    this.Console_searchSlang();
+                    break;
+                case "2":
+                    this.Console_searchDefinition();
+                    break;
+                case "3":
+                    this.printHistory();
+                    break;
+                case "4":
+                    break label;
+                default:
+                    System.out.println("Invalid input! Please enter again");
+            }
+
+        }
+
+        this.finalize();
+    }
     // -----------------------------------------------------------------------
     public static void main(String args[]){
 
         data_process k = new data_process();
-        k.printHistory();
-        k.Console_searchSlang();
-        k.printHistory();
-        k.finalize();
+        k.Console_menuUI();
 
 
         // --------------------
