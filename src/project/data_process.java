@@ -19,73 +19,6 @@ người dùng chọn.
 10. Chức năng đố vui, chương trình hiển thị 1 definition, với 4 slang words đáp án cho
 người dùng chọn.
  */
-/*
-public class data_process {
-    public static final String INPUT_PATH = "input/slang.txt";
-    public TreeMap<String, LinkedList<String>> data;
-
-    private void readfile(String dir){
-        this.data = new TreeMap<String, LinkedList<String>>();
-
-        try {
-            File file = new File(dir);
-            FileReader fr = new FileReader(file);
-            BufferedReader br = new BufferedReader(fr);
-
-            String line_info;
-            while ((line_info = br.readLine()) != null){
-                String[] content = line_info.split("`"); // Parse a line to <Slang> and <Definitions>
-                if (content.length != 2)
-                    continue;
-                String[] syns = content[1].split("\\|"); // Parse <Definitions> if there are many of it
-                LinkedList<String> li = new LinkedList<String>(Arrays.asList(syns)); // Append processed data to treemap
-                (this.data).put(content[0], li);
-            }
-            fr.close();
-
-        }
-        catch (IOException err){
-            err.printStackTrace();
-        }
-    }
-    public void printdata(){
-        Set<Map.Entry<String, LinkedList<String>>> entries = this.data.entrySet();
-        for(Map.Entry<String, LinkedList<String>> entry : entries){
-            System.out.println( entry.getKey() + "\t->\t" + entry.getValue() );
-        }
-    }
-    //1. Chức năng tìm kiếm theo slang word.
-    public LinkedList<String> searchSlang(String word){
-        return this.data.get(word.trim());
-    }
-
-    // 2. Chức năng tìm kiếm theo definition, hiển thị ra tất cả các slang words mà trong
-    // defintion có chứa keyword gõ vào.
-
-
-    // ------------------------ Console UI things --------------------------
-    public void Console_searchSlang(){
-        Scanner scan = new Scanner(System.in);
-        System.out.print("Enter any word to search: ");
-        String kb = scan.nextLine();
-        scan.close();
-        LinkedList<String> query = this.searchSlang(kb);
-        if (query == null)
-            System.out.println("No matches");
-        else
-            System.out.println("Definition: " + query.toString());
-    }
-
-    // -----------------------------------------------------------------------
-    public static void main(String args[]){
-        data_process k = new data_process();
-        k.readfile(INPUT_PATH);
-        // --------------------
-        k.Console_searchSlang();
-    }
-
-}
-*/
 
 public class data_process {
     public static final String INPUT_PATH = "input/slang.txt";
@@ -110,7 +43,7 @@ public class data_process {
                 // Set<Integer> targetSet = new HashSet<Integer>(Arrays.asList(sourceArray));
 
                 Set<String> words = new HashSet<String>(Arrays.asList(syns)); // Append processed data to treemap
-                (this.data).put(content[0], words);
+                (this.data).put(content[0].trim(), words);
             }
             fr.close();
 
@@ -125,22 +58,44 @@ public class data_process {
             System.out.println( entry.getKey() + "\t->\t" + entry.getValue() );
         }
     }
+    private void printWord(String key){
+        Set<String> s = this.data.get(key);
+        if (s != null) {
+            System.out.println( key + "\t->\t" + s.toString());
+        }
+        else
+            System.out.println("No matches");
+    }
     //1. Chức năng tìm kiếm theo slang word.
-    public Set<String> searchSlang(String word){
-        return this.data.get(word.trim());
+    public Set<String> searchSlang(String word) {
+        return this.data.get(word);
+    }
+
+    public List<String> searchSlang_suggestions(String word){
+        List<String> result = new ArrayList<String>();
+        Set<Map.Entry<String, Set<String>>> entries = this.data.entrySet();
+        for(Map.Entry<String,Set<String>> entry: entries){
+            String slang = entry.getKey();
+            if (slang.startsWith(word.toLowerCase()) || slang.startsWith(word.toUpperCase())) {
+                result.add(slang);
+            }
+        }
+        return result;
     }
 
     // 2. Chức năng tìm kiếm theo definition, hiển thị ra tất cả các slang words mà trong
     // defintion có chứa keyword gõ vào.
 
-    public Set<String> searchDefinition(String word){
-        word = word.trim();
-        Set<String> result = new HashSet<String>();
+    public List<String> searchDefinition(String word){
+        List<String> result = new ArrayList<String>();
         Set<Map.Entry<String, Set<String>>> entries = this.data.entrySet();
         for(Map.Entry<String,Set<String>> entry: entries){
-            Set<String> def = entry.getValue();
-            for (String i : def){
-                if (i.contains(word))
+            Set<String> definit = entry.getValue();
+            for (String i : definit){
+                String lo = word.toLowerCase();
+                String s1 = lo.substring(0, 1).toUpperCase();
+                String nameCapitalized = s1 + lo.substring(1);
+                if (i.contains(lo) || i.contains(word.toUpperCase()) || i.contains(word) || i.contains(nameCapitalized))
                     result.add(entry.getKey());
             }
         }
@@ -154,11 +109,21 @@ public class data_process {
         System.out.print("Enter any word to search: ");
         String kb = scan.nextLine();
         scan.close();
+        kb = kb.trim();
         Set<String> query = this.searchSlang(kb);
-        if (query == null)
+
+        if (query == null) {
             System.out.println("No matches");
-        else
-            System.out.println("Definition: " + query.toString());
+            System.out.println("Similar words");
+            List<String> sugg = this.searchSlang_suggestions(Character.toString(kb.charAt(0)));
+            System.out.println("Found " + sugg.size() + " matches");
+            for (String i : sugg)
+                this.printWord(i);
+        }
+        else {
+            System.out.print(kb + "\t->\t");
+            System.out.println(query);
+        }
     }
 
     public void Console_searchDefinition(){
@@ -166,11 +131,15 @@ public class data_process {
         System.out.print("Enter any definition word to search: ");
         String kb = scan.nextLine();
         scan.close();
-        Set<String> query = this.searchDefinition(kb);
-        if (query == null)
+        kb = kb.trim();
+        List<String> query = this.searchDefinition(kb);
+        if (query.isEmpty())
             System.out.println("No matches");
-        else
-            System.out.println("Slang: " + query.toString());
+        else{
+            System.out.println("Found " + query.size() + " matches");
+            for (String i : query)
+                this.printWord(i);
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -178,7 +147,7 @@ public class data_process {
         data_process k = new data_process();
         k.readfile(INPUT_PATH);
         // --------------------
-        k.printdata();
+        //k.printdata();
         //k.Console_searchSlang();
         k.Console_searchDefinition();
     }
