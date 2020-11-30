@@ -24,29 +24,33 @@ public class data_process {
     public static final String INPUT_PATH = "input/slang.txt";
     public static final String SEARCH_PATH = "save/search_log.txt";
     public static final String CHANGE_PATH = "save/change_log.txt";
+    public static final String TRASH_PATH = "save/trash_bin.txt";
     static Scanner keyboard;
-    public TreeMap<String, Set<String>> data , changes;
-    public List<String> history;
+    public TreeMap<String, Set<String>> data, changes;
+    public List<String> history, deleted;
     public String[] paths;
     data_process(){
-        this.keyboard = new Scanner( System.in);
-        this.paths = new String[]{INPUT_PATH, SEARCH_PATH, CHANGE_PATH};
+        this.keyboard = new Scanner(System.in);
+        this.paths = new String[]{INPUT_PATH, SEARCH_PATH, CHANGE_PATH, TRASH_PATH};
         this.readfile(this.paths[0]);
         this.loadHistory(this.paths[1]);
         this.loadChanges(this.paths[2]);
+        this.loadDeleted(this.paths[3]);
     }
     data_process(String[] input_path){
-        if (input_path.length != 3)
+        if (input_path.length != 4)
             throw new IllegalArgumentException("[Invalid input!]");
-        this.keyboard = new Scanner( System.in);
+        this.keyboard = new Scanner(System.in);
         this.paths = input_path;
         this.readfile(this.paths[0]);
         this.loadHistory(this.paths[1]);
         this.loadChanges(this.paths[2]);
+        this.loadDeleted(this.paths[3]);
     }
     protected void finalize(){
         this.backupHistory();
         this.backupChange();
+        this.backupDeleted();
         keyboard.close();
         System.out.println("[Good bye]");
     }
@@ -91,11 +95,36 @@ public class data_process {
                 this.history.add(line_info.trim());
             }
             fr.close();
-
         }
         catch (IOException err){
             err.printStackTrace();
         }
+    }
+    private void loadDeleted(String dir){
+        this.deleted = new ArrayList<String>();
+
+        try {
+            File file = new File(dir);
+            FileReader fr = new FileReader(file);
+            BufferedReader br = new BufferedReader(fr);
+
+            String line_info;
+            while ((line_info = br.readLine()) != null){
+                this.deleted.add(line_info.trim());
+            }
+            fr.close();
+        }
+        catch (IOException err){
+            err.printStackTrace();
+        }
+        int count = 0;
+        System.out.println(this.deleted.size());
+        for(String i : this.deleted){
+            if (!this.realDelete(i))
+                continue;
+            count++;
+        }
+        System.out.println("Deleted " + Integer.toString(count) + " words");
     }
     private void loadChanges(String dir){
         this.changes = new TreeMap<String, Set<String>>(String.CASE_INSENSITIVE_ORDER);
@@ -234,6 +263,7 @@ public class data_process {
     }
     // 4. Chức năng add 1 slang words mới. Nếu slang words trùng thì thông báo cho người
     // dùng, confirm có overwrite hay duplicate ra 1 slang word mới.
+    // 5. Chức năng edit 1 slang word.
     private void editSlang(String word, Set<String> definitions, boolean overwrite){
         if (overwrite){
             this.changes.put(word, definitions);
@@ -251,21 +281,59 @@ public class data_process {
         this.data.put(word, definitions);
     }
 
+    // 6. Chức năng delete 1 slang word. Confirm trước khi xoá.
+    private void deleteSlang(String word){
+        word = word.toUpperCase();
+        if (realDelete(word))
+            this.deleted.add(word);
+    }
+    private boolean realDelete(String word){
+        if (this.data.remove(word) == null)
+            return false; //nothing was deleted
+        return true;
+    }
+    private void backupDeleted(){
+        File fold = new File(this.paths[3]);
+        fold.delete();
+        File fnew = new File(this.paths[3]);
+
+        try {
+            FileWriter f2 = new FileWriter(fnew, false);
+            for(String i : this.deleted) {
+                f2.write(i + "\n");
+            }
+            f2.close();
+
+        } catch (IOException err) {
+            err.printStackTrace();
+        }
+    }
     // ------------------------ Console UI things --------------------------
     public void Console_searchSlang(){
         System.out.print("Enter any word to search: ");
-        String kb = this.keyboard.nextLine();
-        kb = kb.trim();
+        String kb = this.keyboard.nextLine().trim();
         Set<String> query = this.searchSlang(kb);
 
         if (query == null) {
             System.out.println("No matches");
             if (kb != "") {
-                System.out.println("Similar words");
-                List<String> sugg = this.searchSlang_suggestions(Character.toString(kb.charAt(0)));
-                System.out.println("Found " + sugg.size() + " matches");
-                for (String i : sugg)
-                    this.printWord(i);
+                System.out.println("Show suggestions?");
+                System.out.println("Yes (1)");
+                System.out.println("No  (2)");
+                int kb2 = 0;
+                while (true) {
+                    System.out.print("Please enter an integer (1 or 2): ");
+                    kb2 = Integer.parseInt(this.keyboard.nextLine().trim());
+                    if (kb2 == 1 || kb2 == 2)
+                        break;
+                }
+                if (kb2 == 1) {
+                    System.out.println("Similar words");
+                    List<String> sugg = this.searchSlang_suggestions(Character.toString(kb.charAt(0)));
+                    System.out.println("Found " + sugg.size() + " matches");
+                    for (String i : sugg)
+                        this.printWord(i);
+                }
             }
         }
         else {
@@ -289,7 +357,12 @@ public class data_process {
     }
 
     public void Console_menuUI(){
-        String [] options = new String[]{"1. Slang Search", "2. Definition Search", "3. Show Slang Search History", "4. Add/Edit Slang","5. Exit"};
+        String [] options = new String[]{"1. Slang Search",
+                                            "2. Definition Search",
+                                            "3. Show Slang Search History",
+                                            "4. Add/Edit Slang",
+                                            "5. Delete Slang",
+                                            "6. Exit"};
         label:
         while (true){
             for (String i : options){
@@ -313,6 +386,9 @@ public class data_process {
                     this.Console_addSlang();
                     break;
                 case "5":
+                    this.Consold_deleteSlang();
+                    break;
+                case "6":
                     break label;
                 default:
                     System.out.println("Invalid input! Please enter again");
@@ -364,6 +440,29 @@ public class data_process {
                 definitions.add(this.keyboard.nextLine().trim());
             }
             this.addSlang(word, definitions);
+        }
+    }
+
+    public void Consold_deleteSlang(){
+        System.out.print("Enter a slang to delete(this will be converted to uppercase automatically): ");
+        String word = this.keyboard.nextLine().trim().toUpperCase();
+        if(this.data.containsKey(word)){
+            System.out.println("Are you sure to delete this slang?:");
+            System.out.println("Yes (1)");
+            System.out.println("No  (2)");
+            int kb = 0;
+            while (true) {
+                System.out.print("Please enter an integer (1 or 2): ");
+                kb = Integer.parseInt(this.keyboard.nextLine().trim());
+                if (kb == 1 || kb == 2)
+                    break;
+            }
+            if (kb == 1)
+                this.deleteSlang(word);
+                System.out.println("Deletion completed");
+        }
+        else {
+            System.out.println("This slang does not exist!!");
         }
     }
     // -----------------------------------------------------------------------
