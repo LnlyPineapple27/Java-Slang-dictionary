@@ -3,6 +3,7 @@
 package project;
 import com.sun.jdi.event.ExceptionEvent;
 
+import javax.swing.*;
 import java.io.*;
 import java.util.*;
 /*
@@ -32,7 +33,7 @@ public class data_process {
     public List<String> history, deleted;
     public String[] paths;
     public String day_word;
-    data_process(){
+    public data_process(){
         this.keyboard = new Scanner(System.in);
         this.paths = new String[]{INPUT_PATH, SEARCH_PATH, CHANGE_PATH, TRASH_PATH};
         this.readfile(this.paths[0]);
@@ -41,7 +42,7 @@ public class data_process {
         this.loadDeleted(this.paths[3]);
         this.day_word = this.getRandomWord();
     }
-    data_process(String[] input_path){
+    public data_process(String[] input_path){
         if (input_path.length != 4)
             throw new IllegalArgumentException("[Invalid input!]");
         this.keyboard = new Scanner(System.in);
@@ -594,9 +595,14 @@ public class data_process {
     // -----------------------------------------------------------------------
     public static void main(String args[]){
 
-        data_process k = new data_process();
-        k.Console_menuUI();
-
+        //data_process k = new data_process();
+        //k.Console_menuUI();
+        DictionaryGUI ui = new DictionaryGUI();
+        ui.setTitle("Slang Dict");
+        ui.pack();
+        ui.setLocationRelativeTo(null);
+        ui.setVisible(true);
+        ui.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         // --------------------
         //k.Console_searchSlang();

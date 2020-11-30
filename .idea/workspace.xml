@@ -20,6 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3018f38e-e401-44c8-8ba7-01dfc200a0aa" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/project/DictionaryGUI.form" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/project/DictionaryGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/project/data_process.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/project/data_process.java" afterDir="false" />
     </list>
@@ -57,10 +60,12 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="UI_DESIGNER_EDITOR_MODE.PaletteManager.WIDTH" value="120" />
+    <property name="UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.SHOW" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
+    <property name="settings.editor.selected.configurable" value="project.propGUI" />
   </component>
   <component name="RunManager">
     <configuration name="data_process" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
@@ -117,22 +122,26 @@
       <screen x="0" y="0" width="1536" height="834" />
     </state>
     <state x="223" y="72" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.834@0.0.1536.834" timestamp="1606500983981" />
-    <state width="1493" height="178" key="GridCell.Tab.0.bottom" timestamp="1606725731675">
+    <state x="644" y="301" key="#com.intellij.uiDesigner.palette.ComponentItemDialog.OneOff" timestamp="1606754339276">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state width="1493" height="178" key="GridCell.Tab.0.bottom/0.0.1536.834@0.0.1536.834" timestamp="1606725731675" />
-    <state width="1493" height="178" key="GridCell.Tab.0.center" timestamp="1606725731675">
+    <state x="644" y="301" key="#com.intellij.uiDesigner.palette.ComponentItemDialog.OneOff/0.0.1536.834@0.0.1536.834" timestamp="1606754339276" />
+    <state width="1493" height="165" key="GridCell.Tab.0.bottom" timestamp="1606760097835">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state width="1493" height="178" key="GridCell.Tab.0.center/0.0.1536.834@0.0.1536.834" timestamp="1606725731675" />
-    <state width="1493" height="178" key="GridCell.Tab.0.left" timestamp="1606725731675">
+    <state width="1493" height="165" key="GridCell.Tab.0.bottom/0.0.1536.834@0.0.1536.834" timestamp="1606760097835" />
+    <state width="1493" height="165" key="GridCell.Tab.0.center" timestamp="1606760097835">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state width="1493" height="178" key="GridCell.Tab.0.left/0.0.1536.834@0.0.1536.834" timestamp="1606725731675" />
-    <state width="1493" height="178" key="GridCell.Tab.0.right" timestamp="1606725731675">
+    <state width="1493" height="165" key="GridCell.Tab.0.center/0.0.1536.834@0.0.1536.834" timestamp="1606760097835" />
+    <state width="1493" height="165" key="GridCell.Tab.0.left" timestamp="1606760097835">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state width="1493" height="178" key="GridCell.Tab.0.right/0.0.1536.834@0.0.1536.834" timestamp="1606725731675" />
+    <state width="1493" height="165" key="GridCell.Tab.0.left/0.0.1536.834@0.0.1536.834" timestamp="1606760097835" />
+    <state width="1493" height="165" key="GridCell.Tab.0.right" timestamp="1606760097835">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state width="1493" height="165" key="GridCell.Tab.0.right/0.0.1536.834@0.0.1536.834" timestamp="1606760097835" />
     <state width="1493" height="178" key="GridCell.Tab.1.bottom" timestamp="1606725731676">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
@@ -149,10 +158,10 @@
       <screen x="0" y="0" width="1536" height="834" />
     </state>
     <state width="1493" height="178" key="GridCell.Tab.1.right/0.0.1536.834@0.0.1536.834" timestamp="1606725731675" />
-    <state x="555" y="73" key="SettingsEditor" timestamp="1606501148655">
+    <state x="555" y="73" key="SettingsEditor" timestamp="1606753998353">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
-    <state x="555" y="73" key="SettingsEditor/0.0.1536.834@0.0.1536.834" timestamp="1606501148655" />
+    <state x="555" y="73" key="SettingsEditor/0.0.1536.834@0.0.1536.834" timestamp="1606753998353" />
     <state x="425" y="189" key="run.anything.popup" timestamp="1606660316043">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
