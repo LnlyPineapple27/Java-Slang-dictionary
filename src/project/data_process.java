@@ -1,6 +1,8 @@
 // Student Name: Phan Tan Dat
 // Student ID: 18127078
 package project;
+import com.sun.jdi.event.ExceptionEvent;
+
 import java.io.*;
 import java.util.*;
 /*
@@ -29,6 +31,7 @@ public class data_process {
     public TreeMap<String, Set<String>> data, changes;
     public List<String> history, deleted;
     public String[] paths;
+    public String day_word;
     data_process(){
         this.keyboard = new Scanner(System.in);
         this.paths = new String[]{INPUT_PATH, SEARCH_PATH, CHANGE_PATH, TRASH_PATH};
@@ -36,6 +39,7 @@ public class data_process {
         this.loadHistory(this.paths[1]);
         this.loadChanges(this.paths[2]);
         this.loadDeleted(this.paths[3]);
+        this.day_word = this.getRandomWord();
     }
     data_process(String[] input_path){
         if (input_path.length != 4)
@@ -46,6 +50,7 @@ public class data_process {
         this.loadHistory(this.paths[1]);
         this.loadChanges(this.paths[2]);
         this.loadDeleted(this.paths[3]);
+        this.day_word = this.getRandomWord();
     }
     protected void finalize(){
         this.backupHistory();
@@ -263,6 +268,7 @@ public class data_process {
     }
     // 4. Chức năng add 1 slang words mới. Nếu slang words trùng thì thông báo cho người
     // dùng, confirm có overwrite hay duplicate ra 1 slang word mới.
+
     // 5. Chức năng edit 1 slang word.
     private void editSlang(String word, Set<String> definitions, boolean overwrite){
         if (overwrite){
@@ -322,6 +328,26 @@ public class data_process {
         int index = new Random().nextInt(Keys.length);
         return (String) Keys[index];
     }
+
+    // 9. Chức năng đố vui, chương trình hiển thị 1 random slang word, với 4 đáp án cho
+    // người dùng chọn.
+    /*
+    private class Quiz {
+        int answer;
+        Map<String, Set<String>> questions;
+        Quiz(){
+
+        }
+    }
+    */
+    private Map<String, Set<String>> generateQuiz() {
+        Map<String, Set<String>> result = new HashMap<String, Set<String>>();
+        while (result.size() != 4) {
+            String word = getRandomWord();
+            result.put(word, this.data.get(word));
+        }
+        return result;
+    }
     // ------------------------ Console UI things --------------------------
     public void Console_searchSlang(){
         System.out.print("Enter any word to search: ");
@@ -371,14 +397,18 @@ public class data_process {
     }
 
     public void Console_menuUI(){
-        String [] options = new String[]{"1. Slang Search",
-                                            "2.  Definition Search",
-                                            "3.  Show Slang Search History",
-                                            "4.  Add/Edit Slang",
-                                            "5.  Delete Slang",
-                                            "6.  Reset dictionary",
-                                            "7.  On this day slang word",
-                                            "10. Exit"};
+        String [] options = new String[]{
+                "1.  Slang Search",
+                "2.  Definition Search",
+                "3.  Show Slang Search History",
+                "4.  Add/Edit Slang",
+                "5.  Delete Slang",
+                "6.  Reset dictionary",
+                "7.  On this day slang word",
+                "8.  Slang quiz",
+                "9.  Definition quiz",
+                "10. Exit"
+        };
         label:
         while (true){
             for (String i : options){
@@ -411,8 +441,10 @@ public class data_process {
                     this.Console_slang_of_the_day();
                     break;
                 case "8":
+                    this.Console_SlangQuiz();
                     break;
                 case "9":
+                    this.Console_DefinitionQuiz();
                     break;
                 case "10":
                     break label;
@@ -426,9 +458,8 @@ public class data_process {
     }
 
     public void Console_slang_of_the_day(){
-        String word = this.getRandomWord();
         System.out.println("Slang of the day is: ");
-        this.printWord(word);
+        this.printWord(this.day_word);
     }
 
     public void Console_addSlang(){
@@ -512,6 +543,54 @@ public class data_process {
         if (kb == 1)
             this.resetDictionary();
     }
+
+    public void Console_SlangQuiz(){
+        System.out.println("____________SLANG QUIZ_____________");
+        Map<String, Set<String>> quiz = this.generateQuiz();
+        int max = quiz.size(), min = 1;
+        int ans = new Random().nextInt((max - min) + 1) + min;
+        int i  = 0;
+        String ques = "";
+        for (Map.Entry<String, Set<String>> entry : quiz.entrySet()) {
+            i++;
+            System.out.print(Integer.toString(i) + ".  ");
+            System.out.println(entry.getValue());
+            if (i == ans)
+                ques = entry.getKey();
+        }
+        System.out.print("\tWhich one is the definition of Slang [" + ques +"]\n\t(choose 1 to " + Integer.toString(i) + "): ");
+        int choice = Integer.parseInt(this.keyboard.nextLine().trim());
+        if (choice == ans)
+            System.out.println("\t\tCorrect!");
+        else System.out.println("\t\tWrong :<");
+    }
+
+    public void Console_DefinitionQuiz(){
+        System.out.println("____________DEFINITION QUIZ_____________");
+        Map<String, Set<String>> quiz = this.generateQuiz();
+        int max = quiz.size(), min = 1;
+        int ans = new Random().nextInt((max - min) + 1) + min;
+        int i  = 0;
+        Set<String> ques = null;
+        for (Map.Entry<String, Set<String>> entry : quiz.entrySet()) {
+            i++;
+            System.out.print(Integer.toString(i) + ".  ");
+            System.out.println(entry.getKey());
+            if (i == ans)
+                ques = entry.getValue();
+        }
+        if (ques == null) {
+            System.out.println("Something went wrong :<");
+            return;
+        }
+
+        System.out.print("\tWhich one is the slang of " + ques +"\n\t(choose 1 to " + Integer.toString(i) + "): ");
+        int choice = Integer.parseInt(this.keyboard.nextLine().trim());
+        if (choice == ans)
+            System.out.println("\t\tCorrect!");
+        else System.out.println("\t\tWrong :<");
+    }
+
     // -----------------------------------------------------------------------
     public static void main(String args[]){
 
