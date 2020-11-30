@@ -163,7 +163,7 @@ public class data_process {
     private void printWord(String key){
         Set<String> s = this.data.get(key);
         if (s != null) {
-            System.out.println( key.toUpperCase() + "\t->\t" + s.toString());
+            System.out.println("\t" + key.toUpperCase() + "\t->\t" + s.toString());
         }
         else
             System.out.println("No matches");
@@ -315,6 +315,13 @@ public class data_process {
         this.deleted.clear();
         this.changes.clear();
     }
+
+    // 8. Chức năng random 1 slang word (On this day slang words).
+    private String getRandomWord(){
+        Object[] Keys = this.data.keySet().toArray();
+        int index = new Random().nextInt(Keys.length);
+        return (String) Keys[index];
+    }
     // ------------------------ Console UI things --------------------------
     public void Console_searchSlang(){
         System.out.print("Enter any word to search: ");
@@ -322,14 +329,14 @@ public class data_process {
         Set<String> query = this.searchSlang(kb);
 
         if (query == null) {
-            System.out.println("No matches");
+            System.out.println("[No matches]");
             if (kb != "") {
-                System.out.println("Show suggestions?");
-                System.out.println("Yes (1)");
-                System.out.println("No  (2)");
+                System.out.println("\tShow suggestions?");
+                System.out.println("\t\tYes (1)");
+                System.out.println("\t\tNo  (2)");
                 int kb2 = 0;
                 while (true) {
-                    System.out.print("Please enter an integer (1 or 2): ");
+                    System.out.print("\tPlease enter an integer (1 or 2): ");
                     kb2 = Integer.parseInt(this.keyboard.nextLine().trim());
                     if (kb2 == 1 || kb2 == 2)
                         break;
@@ -344,7 +351,7 @@ public class data_process {
             }
         }
         else {
-            System.out.print(kb.toUpperCase() + "\t->\t");
+            System.out.print("\t" + kb.toUpperCase() + "\t->\t");
             System.out.println(query);
         }
     }
@@ -355,7 +362,7 @@ public class data_process {
         kb = kb.trim();
         List<String> query = this.searchDefinition(kb);
         if (query.isEmpty())
-            System.out.println("No matches");
+            System.out.println("[No matches]");
         else{
             System.out.println("Found " + query.size() + " matches");
             for (String i : query)
@@ -370,6 +377,7 @@ public class data_process {
                                             "4.  Add/Edit Slang",
                                             "5.  Delete Slang",
                                             "6.  Reset dictionary",
+                                            "7.  On this day slang word",
                                             "10. Exit"};
         label:
         while (true){
@@ -400,6 +408,7 @@ public class data_process {
                     this.Console_resetDictionary();
                     break;
                 case "7":
+                    this.Console_slang_of_the_day();
                     break;
                 case "8":
                     break;
@@ -416,14 +425,20 @@ public class data_process {
         this.finalize();
     }
 
+    public void Console_slang_of_the_day(){
+        String word = this.getRandomWord();
+        System.out.println("Slang of the day is: ");
+        this.printWord(word);
+    }
+
     public void Console_addSlang(){
         System.out.print("Enter a slang(this will be converted to uppercase automatically): ");
         String word = this.keyboard.nextLine().trim().toUpperCase();
         if(this.data.containsKey(word)){
-            System.out.println("This Slang was defined in data base:");
+            System.out.println("\tThis Slang was defined in data base:");
             this.printWord(word);
-            System.out.println("Do you wish to overwrite it (1)\n" +
-                                "or just add new definition to it (2)");
+            System.out.println("\tDo you wish to overwrite it (1)\n" +
+                                "\tor just add new definition to it (2)");
             int kb = 0;
             while (true) {
                 System.out.print("Please enter an integer (1 or 2): ");
@@ -464,9 +479,9 @@ public class data_process {
         System.out.print("Enter a slang to delete(this will be converted to uppercase automatically): ");
         String word = this.keyboard.nextLine().trim().toUpperCase();
         if(this.data.containsKey(word)){
-            System.out.println("Are you sure to delete this slang?:");
-            System.out.println("Yes (1)");
-            System.out.println("No  (2)");
+            System.out.println("\tAre you sure to delete this slang?:");
+            System.out.println("\t\tYes (1)");
+            System.out.println("\t\tNo  (2)");
             int kb = 0;
             while (true) {
                 System.out.print("Please enter an integer (1 or 2): ");
@@ -484,12 +499,12 @@ public class data_process {
     }
 
     public void Console_resetDictionary(){
-        System.out.println("Are you sure to reset dictionary?:");
-        System.out.println("Yes (1)");
-        System.out.println("No  (2)");
+        System.out.println("\tAre you sure to reset dictionary?:");
+        System.out.println("\t\tYes (1)");
+        System.out.println("\t\tNo  (2)");
         int kb = 0;
         while (true) {
-            System.out.print("Please enter an integer (1 or 2): ");
+            System.out.print("\tPlease enter an integer (1 or 2): ");
             kb = Integer.parseInt(this.keyboard.nextLine().trim());
             if (kb == 1 || kb == 2)
                 break;
