@@ -308,6 +308,13 @@ public class data_process {
             err.printStackTrace();
         }
     }
+
+    // 7. Chức năng reset danh sách slang words gốc.
+    private void resetDictionary(){
+        this.readfile(this.paths[0]);
+        this.deleted.clear();
+        this.changes.clear();
+    }
     // ------------------------ Console UI things --------------------------
     public void Console_searchSlang(){
         System.out.print("Enter any word to search: ");
@@ -358,11 +365,12 @@ public class data_process {
 
     public void Console_menuUI(){
         String [] options = new String[]{"1. Slang Search",
-                                            "2. Definition Search",
-                                            "3. Show Slang Search History",
-                                            "4. Add/Edit Slang",
-                                            "5. Delete Slang",
-                                            "6. Exit"};
+                                            "2.  Definition Search",
+                                            "3.  Show Slang Search History",
+                                            "4.  Add/Edit Slang",
+                                            "5.  Delete Slang",
+                                            "6.  Reset dictionary",
+                                            "10. Exit"};
         label:
         while (true){
             for (String i : options){
@@ -386,12 +394,21 @@ public class data_process {
                     this.Console_addSlang();
                     break;
                 case "5":
-                    this.Consold_deleteSlang();
+                    this.Console_deleteSlang();
                     break;
                 case "6":
+                    this.Console_resetDictionary();
+                    break;
+                case "7":
+                    break;
+                case "8":
+                    break;
+                case "9":
+                    break;
+                case "10":
                     break label;
                 default:
-                    System.out.println("Invalid input! Please enter again");
+                    System.out.println("[Invalid input! Please enter again]");
             }
 
         }
@@ -443,7 +460,7 @@ public class data_process {
         }
     }
 
-    public void Consold_deleteSlang(){
+    public void Console_deleteSlang(){
         System.out.print("Enter a slang to delete(this will be converted to uppercase automatically): ");
         String word = this.keyboard.nextLine().trim().toUpperCase();
         if(this.data.containsKey(word)){
@@ -464,6 +481,21 @@ public class data_process {
         else {
             System.out.println("This slang does not exist!!");
         }
+    }
+
+    public void Console_resetDictionary(){
+        System.out.println("Are you sure to reset dictionary?:");
+        System.out.println("Yes (1)");
+        System.out.println("No  (2)");
+        int kb = 0;
+        while (true) {
+            System.out.print("Please enter an integer (1 or 2): ");
+            kb = Integer.parseInt(this.keyboard.nextLine().trim());
+            if (kb == 1 || kb == 2)
+                break;
+        }
+        if (kb == 1)
+            this.resetDictionary();
     }
     // -----------------------------------------------------------------------
     public static void main(String args[]){
