@@ -246,6 +246,10 @@ public class data_process {
             this.data.put(word, definitions);
         }
     }
+    private void addSlang(String word, Set<String> definitions){
+        this.changes.put(word, definitions);
+        this.data.put(word, definitions);
+    }
 
     // ------------------------ Console UI things --------------------------
     public void Console_searchSlang(){
@@ -323,13 +327,11 @@ public class data_process {
         System.out.print("Enter a slang(this will be converted to uppercase automatically): ");
         String word = this.keyboard.nextLine().trim().toUpperCase();
         if(this.data.containsKey(word)){
-            int kb = 0;
-
             System.out.println("This Slang was defined in data base:");
             this.printWord(word);
             System.out.println("Do you wish to overwrite it (1)\n" +
                                 "or just add new definition to it (2)");
-
+            int kb = 0;
             while (true) {
                 System.out.print("Please enter an integer (1 or 2): ");
                 kb = Integer.parseInt(this.keyboard.nextLine().trim());
@@ -351,6 +353,17 @@ public class data_process {
             if (kb == 2)
                 this.editSlang(word, definitions, false);
 
+        }
+        else {
+            System.out.print("Enter number of definitions to add this new slang: ");
+            int num = Integer.parseInt(this.keyboard.nextLine().trim());
+
+            Set<String> definitions = new HashSet<String>();
+            for (int i = 1; i <= num; i++){
+                System.out.print("Enter definition " + Integer.toString(i) + ": ");
+                definitions.add(this.keyboard.nextLine().trim());
+            }
+            this.addSlang(word, definitions);
         }
     }
     // -----------------------------------------------------------------------
