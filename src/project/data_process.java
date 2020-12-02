@@ -1,11 +1,6 @@
 // Student Name: Phan Tan Dat
 // Student ID: 18127078
-package project;
-import com.sun.jdi.event.ExceptionEvent;
-
-import javax.swing.*;
-import java.io.*;
-import java.util.*;
+// Java project Slang Dictionary with Console UI
 /*
 1. Chức năng tìm kiếm theo slang word.
 2. Chức năng tìm kiếm theo definition, hiển thị ra tất cả các slang words mà trong
@@ -22,13 +17,17 @@ người dùng chọn.
 10. Chức năng đố vui, chương trình hiển thị 1 definition, với 4 slang words đáp án cho
 người dùng chọn.
  */
+package project;
+
+import java.io.*;
+import java.util.*;
 
 public class data_process {
     public static final String INPUT_PATH = "input/slang.txt";
     public static final String SEARCH_PATH = "save/search_log.txt";
     public static final String CHANGE_PATH = "save/change_log.txt";
     public static final String TRASH_PATH = "save/trash_bin.txt";
-    static Scanner keyboard;
+    private Scanner keyboard;
     public TreeMap<String, Set<String>> data, changes;
     public List<String> history, deleted;
     public String[] paths;
@@ -76,7 +75,6 @@ public class data_process {
                 String[] syns = content[1].split("\\|"); // Parse <Definitions> if there are many of it
                 for (int i = 0; i < syns.length; i++)
                     syns[i] = syns[i].trim();
-                // Set<Integer> targetSet = new HashSet<Integer>(Arrays.asList(sourceArray));
 
                 Set<String> words = new HashSet<String>(Arrays.asList(syns)); // Append processed data to treemap
                 (this.data).put(content[0].trim(), words);
@@ -86,6 +84,8 @@ public class data_process {
         }
         catch (IOException err){
             err.printStackTrace();
+            System.out.println("[No input file was found in given directory!!]");
+            System.exit(0);
         }
     }
     private void loadHistory(String dir){
@@ -101,9 +101,12 @@ public class data_process {
                 this.history.add(line_info.trim());
             }
             fr.close();
+
+            System.out.println("[History save loaded]");
         }
         catch (IOException err){
-            err.printStackTrace();
+            //err.printStackTrace();
+            System.out.println("[No history save is found]");
         }
     }
     private void loadDeleted(String dir){
@@ -119,18 +122,21 @@ public class data_process {
                 this.deleted.add(line_info.trim());
             }
             fr.close();
+
+            System.out.println("[Delete save loaded]");
         }
         catch (IOException err){
-            err.printStackTrace();
+            //err.printStackTrace();
+            System.out.println("[No delete save is found]");
         }
         int count = 0;
-        System.out.println(this.deleted.size());
+        //System.out.println(this.deleted.size());
         for(String i : this.deleted){
             if (!this.realDelete(i))
                 continue;
             count++;
         }
-        System.out.println("Deleted " + Integer.toString(count) + " words");
+        System.out.println("[Deleted " + Integer.toString(count) + " words]");
     }
     private void loadChanges(String dir){
         this.changes = new TreeMap<String, Set<String>>(String.CASE_INSENSITIVE_ORDER);
@@ -147,17 +153,17 @@ public class data_process {
                 String[] syns = content[1].split("\\|"); // Parse <Definitions> if there are many of it
                 for (int i = 0; i < syns.length; i++)
                     syns[i] = syns[i].trim();
-                // Set<Integer> targetSet = new HashSet<Integer>(Arrays.asList(sourceArray));
 
                 Set<String> words = new HashSet<String>(Arrays.asList(syns)); // Append processed data to treemap
                 this.data.put(content[0].trim(), words);
                 this.changes.put(content[0].trim(), words);
             }
             fr.close();
-
+            System.out.println("[Changes save loaded]");
         }
         catch (IOException err){
-            err.printStackTrace();
+            //err.printStackTrace();
+            System.out.println("[No change save is found]");
         }
     }
     public void print_all_data(){
@@ -228,7 +234,9 @@ public class data_process {
         File fold = new File(this.paths[1]);
         fold.delete();
         File fnew = new File(this.paths[1]);
-
+        File parentDir = fnew.getParentFile();
+        if(! parentDir.exists())
+            parentDir.mkdirs();
         try {
             FileWriter f2 = new FileWriter(fnew, false);
             for(String i : this.history) {
@@ -244,6 +252,9 @@ public class data_process {
         File fold = new File(this.paths[2]);
         fold.delete();
         File fnew = new File(this.paths[2]);
+        File parentDir = fnew.getParentFile();
+        if(! parentDir.exists())
+            parentDir.mkdirs();
 
         try {
             FileWriter f2 = new FileWriter(fnew, false);
@@ -304,6 +315,9 @@ public class data_process {
         fold.delete();
         File fnew = new File(this.paths[3]);
 
+        File parentDir = fnew.getParentFile();
+        if(! parentDir.exists())
+            parentDir.mkdirs();
         try {
             FileWriter f2 = new FileWriter(fnew, false);
             for(String i : this.deleted) {
@@ -330,17 +344,8 @@ public class data_process {
         return (String) Keys[index];
     }
 
-    // 9. Chức năng đố vui, chương trình hiển thị 1 random slang word, với 4 đáp án cho
-    // người dùng chọn.
-    /*
-    private class Quiz {
-        int answer;
-        Map<String, Set<String>> questions;
-        Quiz(){
+    // 9, 10. Chức năng đố vui
 
-        }
-    }
-    */
     private Map<String, Set<String>> generateQuiz() {
         Map<String, Set<String>> result = new HashMap<String, Set<String>>();
         while (result.size() != 4) {
@@ -363,8 +368,15 @@ public class data_process {
                 System.out.println("\t\tNo  (2)");
                 int kb2 = 0;
                 while (true) {
-                    System.out.print("\tPlease enter an integer (1 or 2): ");
-                    kb2 = Integer.parseInt(this.keyboard.nextLine().trim());
+                    while (true) {
+                        try {
+                            System.out.print("\nPlease enter an integer (1 or 2): ");
+                            kb2 = Integer.parseInt(this.keyboard.nextLine().trim());
+                            break;
+                        } catch (NumberFormatException err) {
+                            System.out.println("Invalid input! Try again");
+                        }
+                    }
                     if (kb2 == 1 || kb2 == 2)
                         break;
                 }
@@ -392,8 +404,10 @@ public class data_process {
             System.out.println("[No matches]");
         else{
             System.out.println("Found " + query.size() + " matches");
-            for (String i : query)
+            for (String i : query) {
                 this.printWord(i);
+                this.appendHistory(i);
+            }
         }
     }
 
@@ -412,6 +426,7 @@ public class data_process {
         };
         label:
         while (true){
+            System.out.println("\n-------------------------------------------------------------------------");
             for (String i : options){
                 System.out.println(i);
             }
@@ -473,14 +488,28 @@ public class data_process {
                                 "\tor just add new definition to it (2)");
             int kb = 0;
             while (true) {
-                System.out.print("Please enter an integer (1 or 2): ");
-                kb = Integer.parseInt(this.keyboard.nextLine().trim());
+                while (true) {
+                    try {
+                        System.out.print("\nPlease enter an integer (1 or 2): ");
+                        kb = Integer.parseInt(this.keyboard.nextLine().trim());
+                        break;
+                    } catch (NumberFormatException err) {
+                        System.out.println("Invalid input! Try again");
+                    }
+                }
                 if (kb == 1 || kb == 2)
                     break;
             }
-            System.out.print("Enter number of definitions to add: ");
-            int num = Integer.parseInt(this.keyboard.nextLine().trim());
-
+            int num = 0;
+            while (true) {
+                try {
+                    System.out.print("\nEnter number of definitions to add: ");
+                    num = Integer.parseInt(this.keyboard.nextLine().trim());
+                    break;
+                } catch (NumberFormatException err) {
+                    System.out.println("Invalid input! Try again");
+                }
+            }
             Set<String> definitions = new HashSet<String>();
             for (int i = 1; i <= num; i++){
                 System.out.print("Enter definition " + Integer.toString(i) + ": ");
@@ -495,8 +524,16 @@ public class data_process {
 
         }
         else {
-            System.out.print("Enter number of definitions to add this new slang: ");
-            int num = Integer.parseInt(this.keyboard.nextLine().trim());
+            int num = 0;
+            while (true) {
+                try {
+                    System.out.print("\nEnter number of definitions to add this new slang: ");
+                    num = Integer.parseInt(this.keyboard.nextLine().trim());
+                    break;
+                } catch (NumberFormatException err) {
+                    System.out.println("Invalid input! Try again");
+                }
+            }
 
             Set<String> definitions = new HashSet<String>();
             for (int i = 1; i <= num; i++){
@@ -516,8 +553,16 @@ public class data_process {
             System.out.println("\t\tNo  (2)");
             int kb = 0;
             while (true) {
-                System.out.print("Please enter an integer (1 or 2): ");
-                kb = Integer.parseInt(this.keyboard.nextLine().trim());
+                while (true) {
+                    try {
+                        System.out.print("\t\nPlease enter an integer (1 or 2): ");
+                        kb = Integer.parseInt(this.keyboard.nextLine().trim());
+                        break;
+                    } catch (NumberFormatException err) {
+                        System.out.println("Invalid input! Try again");
+                    }
+                }
+
                 if (kb == 1 || kb == 2)
                     break;
             }
@@ -536,8 +581,16 @@ public class data_process {
         System.out.println("\t\tNo  (2)");
         int kb = 0;
         while (true) {
-            System.out.print("\tPlease enter an integer (1 or 2): ");
-            kb = Integer.parseInt(this.keyboard.nextLine().trim());
+            while (true) {
+                try {
+                    System.out.print("\t\nPlease enter an integer (1 or 2): ");
+                    kb = Integer.parseInt(this.keyboard.nextLine().trim());
+                    break;
+                } catch (NumberFormatException err) {
+                    System.out.println("Invalid input! Try again");
+                }
+            }
+
             if (kb == 1 || kb == 2)
                 break;
         }
@@ -559,8 +612,17 @@ public class data_process {
             if (i == ans)
                 ques = entry.getKey();
         }
-        System.out.print("\tWhich one is the definition of Slang [" + ques +"]\n\t(choose 1 to " + Integer.toString(i) + "): ");
-        int choice = Integer.parseInt(this.keyboard.nextLine().trim());
+        int choice = 0;
+        while (true) {
+            try {
+                System.out.print("\t\nWhich one is the definition of Slang [" + ques +"]\n\t(choose 1 to " + Integer.toString(i) + "): ");
+                choice = Integer.parseInt(this.keyboard.nextLine().trim());
+                break;
+            } catch (NumberFormatException err) {
+                System.out.println("Invalid input! Try again");
+            }
+        }
+
         if (choice == ans)
             System.out.println("\t\tCorrect!");
         else System.out.println("\t\tWrong :<");
@@ -585,8 +647,17 @@ public class data_process {
             return;
         }
 
-        System.out.print("\tWhich one is the slang of " + ques +"\n\t(choose 1 to " + Integer.toString(i) + "): ");
-        int choice = Integer.parseInt(this.keyboard.nextLine().trim());
+        int choice = 0;
+        while (true) {
+            try {
+                System.out.print("\t\nWhich one is the slang of " + ques + "\n\t(choose 1 to " + Integer.toString(i) + "): ");
+                choice = Integer.parseInt(this.keyboard.nextLine().trim());
+                break;
+            } catch (NumberFormatException err) {
+                System.out.println("Invalid input! Try again");
+            }
+        }
+
         if (choice == ans)
             System.out.println("\t\tCorrect!");
         else System.out.println("\t\tWrong :<");
@@ -594,19 +665,8 @@ public class data_process {
 
     // -----------------------------------------------------------------------
     public static void main(String args[]){
-
-        //data_process k = new data_process();
-        //k.Console_menuUI();
-        DictionaryGUI ui = new DictionaryGUI();
-        ui.setTitle("Slang Dict");
-        ui.pack();
-        ui.setLocationRelativeTo(null);
-        ui.setVisible(true);
-        ui.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-        // --------------------
-        //k.Console_searchSlang();
-        //k.Console_searchDefinition();
+        data_process k = new data_process();
+        k.Console_menuUI();
     }
 
 }
